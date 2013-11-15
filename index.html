@@ -1,0 +1,389 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+<title>BookLibraryManager</title>
+<link href="jquery.mobile-1.0a3.min.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" href="skin.css" />
+<script src="jquery-1.5.min.js" type="text/javascript"></script>
+<script src="jquery.mobile-1.0a3.min.js" type="text/javascript"></script>
+<!-- This reference to phonegap.js will allow for code hints as long as the current site has been configured as a mobile application. 
+	 To configure the site as a mobile application, go to Site -> Mobile Applications -> Configure Application Framework... -->
+
+<script src="cordova-2.8.1.jar" type="text/javascript"></script>
+
+ <script src="jquery.form.js" type="text/javascript"></script>
+ 
+ <style>
+
+#page {
+background-image: url('bg.gif');
+background-repeat:no-repeat;
+background-position:left top;	
+}
+
+
+#detail_box {
+border:1px solid #000000	
+}
+
+ </style>
+ 
+ 
+ 
+<script>
+$(document).ready(function() {
+
+
+
+
+	
+	
+	
+	
+$(document).delegate('#hit', 'click', function(e) {
+	e.preventDefault();
+	var id = $('#idNum').data('number');
+	var comment = $('#comment').val();
+	
+	  $.ajax({
+	  url: "http://seeward.com/book_app_comment.php",
+	  type: "GET",
+  	   data: { "id" : id,
+	   			"comment" : comment},
+	  }).done(function(html) {
+$('#details').empty;
+	$('#comment_success').append(html)
+	  });
+
+});
+
+
+
+
+$(document).delegate('.sel', 'click',  function(e) {
+	$('#details').empty();
+	$('#comment_success').empty();
+	
+	var id = $(this).data('number');
+	
+	  $.ajax({
+	  url: "http://seeward.com/book_app_detail.php",
+	  type: "GET",
+  	   data: { "name" : id},
+	  }).done(function(html) {
+	$('#loader4').hide();
+	$('#details').append(html)
+	$('#details').trigger('create');  
+  $('#details').listview('refresh');
+	  });
+ 
+	
+});
+
+$('#library').click(function() {
+$.ajax({
+  url: "http://seeward.com/books_app.php",
+  cache: true
+}).done(function( html ) {
+	$('#loader3').hide();
+  $("#results").append(html);
+  $('#results').trigger('create');  
+  $('#results').listview('refresh');
+  
+  
+    
+
+
+});
+
+});
+  
+  
+  
+
+
+
+
+
+  
+  
+  $('#checkIn').click(function() {
+	  $('#checkedOut').empty();
+	  $('#checksuccess').empty();
+  $.ajax({
+  url: "http://seeward.com/books_checked.php",
+  cache: false
+}).done(function( html ) {
+		$('#loader1').hide();
+  $("#checkedOut").append(html);
+  $('#checker').ajaxForm(function(data) { 
+  
+                $('#checksuccess').html(data);
+			  $('#checkOut').trigger('create');  
+
+$('#checksuccess').slideDown('slow');
+   
+            }); 
+});
+
+  });
+
+
+
+$.ajax({
+  url: "http://seeward.com/books_checked_num.php",
+  cache: false
+}).done(function( html ) {
+	$('#loader2').hide();
+  $("#status").append(html);  
+
+  $('#status').listview('refresh');
+
+});
+
+
+
+ $('#myForm1').ajaxForm(function(data) { 
+                $('#search_results').html(data);
+$('#search_results').slideDown('slow');
+    $('#search_results').listview('refresh');
+
+
+            }); 
+			
+			
+			 $('#myForm2').ajaxForm(function(data) { 
+                $('#search_results2').html(data);
+$('#search_results2').slideDown('slow');
+    $('#search_results2').listview('refresh');
+
+
+$('#checker').ajaxForm(function(data) { 
+                $('#success').html(data);
+				  $('#success').trigger('create');  
+
+$('#success').slideDown('slow');
+  $('#search_results2').empty();
+ 
+
+
+            }); 
+			
+
+            }); 
+			
+		
+			 $('#form2').ajaxForm(function(data) { 
+                $('#added').html(data);
+$('#added').slideDown('slow');
+  $('#form2').find("input[type=text], textarea").val("");
+
+
+            }); 
+			
+});
+
+</script>
+
+</head> 
+<body> 
+
+<div data-role="page" id="page">
+	<div data-role="header" data-theme="a">
+    <h1>Books Library Manager</h1>
+	</div>
+	<div data-role="content" style="height:800px">	
+<div id="checked_num">
+
+<div id='num' data-role="collapsible"  data-theme="a" data-collapsed="true" style='padding-top:320px'>
+<h3>Current 
+ Status</h3>
+<div style="padding:20px"><ul data-role="listview" data-inset="true" data-theme="a" id="status"></ul></div></div>
+
+</div>
+		<ul data-role="listview" data-inset="true" data-theme="a">
+			<li data-icon="arrow-r"><a id="library" href="#page2" data-transition="fade">View Library</a></li>
+            <li data-icon="gear"><a href="#page5" data-transition="fade">Check Out a Book</a></li>
+            <li data-icon="check"><a id="checkIn" href="#page6" data-transition="fade">Check In a Book</a></li>
+                        <li data-icon="plus"><a href="#page3" data-transition="fade">Add a Book</a></li>
+            		<li data-icon="search"><a href="#page4" data-transition="fade">Search</a></li>
+		</ul>	<br>	
+        
+	</div>
+	<div data-role="footer">
+		<h4>Christian McCabe | 2013</h4>
+	</div>
+</div>
+
+<div data-role="page" id="page2">
+	<div data-role="header">
+		<h1>Library</h1>
+    
+
+	</div>
+<div style="padding-top:40px" id="loader3" align="center"><img src="ajax-loader.gif"></div>
+<div style="padding:20px;"><ul data-role="listview" data-inset="true" data-theme="a" id="results"></ul>
+</div>
+</div>
+	
+    
+    
+    
+    
+    
+    
+    <div data-role="footer">
+		<div align="center">
+       <a href="#page" data-role="button"> Home</a>&nbsp;&nbsp;
+                   <a href="#page2" data-role="button"> Library</a>&nbsp;&nbsp;
+        <a href="#page3" data-role="button"> Add</a>&nbsp;&nbsp;
+             <a href="#page6" data-role="button"> Check In</a>&nbsp;&nbsp;
+             <a href="#page5" data-role="button"> Check Out</a>&nbsp;&nbsp;
+             <a href="#page4" data-role="button"> Search</a>&nbsp;&nbsp;
+
+
+        </div>
+	</div>
+</div>
+
+<div data-role="page" id="page3">
+	<div data-role="header">
+		<h1>Add a Book</h1>
+	</div>
+	<div data-role="content" id="former">	
+<form id="form2" action="http://www.seeward.com/books_app_add.php" method="POST">
+Name<br>
+<input type="text" autocomplete="off" name="name" /><br>
+Author<br>
+<input type="text" autocomplete="off" name="author" /><br>
+Date<br>
+<input type="text" autocomplete="off" name="date" /><br>
+Subject<br>
+<input type="text" autocomplete="off" name="subject" /><br>
+
+<button id="adder" type="submit" >Add Book to Library</button>
+
+
+</form>	
+<div id="added"></div>
+
+</div>
+	<div data-role="footer">
+		<div align="center">
+       <a href="#page" data-role="button"> Home</a>&nbsp;&nbsp;
+                   <a href="#page2" data-role="button"> Library</a>&nbsp;&nbsp;
+        <a href="#page3" data-role="button"> Add</a>&nbsp;&nbsp;
+             <a href="#page6" data-role="button"> Check In</a>&nbsp;&nbsp;
+             <a href="#page5" data-role="button"> Check Out</a>&nbsp;&nbsp;
+             <a href="#page4" data-role="button"> Search</a>&nbsp;&nbsp;
+
+
+        </div>
+	</div>
+</div>
+
+<div data-role="page" id="page4">
+	<div data-role="header">
+		<h1>Search</h1>
+	</div>
+	<div data-role="content">	
+<form action="http://www.seeward.com/app_search.php" method="POST" id="myForm1"><input id="search" type="text" id="query" name="s" placeholder="Search..." /></form>	</div>
+<div style="padding:20px"><ul data-role="listview" data-inset="true" data-theme="a" id="search_results"></ul></div>
+
+<div style="height:800px"></div>
+	<div data-role="footer">
+	<div align="center">
+       <a href="#page" data-role="button"> Home</a>&nbsp;&nbsp;
+                   <a href="#page2" data-role="button"> Library</a>&nbsp;&nbsp;
+        <a href="#page3" data-role="button"> Add</a>&nbsp;&nbsp;
+             <a href="#page6" data-role="button"> Check In</a>&nbsp;&nbsp;
+             <a href="#page5" data-role="button"> Check Out</a>&nbsp;&nbsp;
+             <a href="#page4" data-role="button"> Search</a>&nbsp;&nbsp;
+
+
+        </div>
+	</div>
+</div>
+
+<div data-role="page" id="page5">
+	<div data-role="header">
+		<h1>Check Out a Book</h1>
+	</div>
+	<div data-role="content">	
+<form action="http://www.seeward.com/app_search_checked.php" method="POST" id="myForm2"><input id="search" type="text" id="query" name="s" placeholder="Search..." /></form>	</div>
+<div id="success" style="padding-left:10px"></div>
+<div id='search_results2' style="padding:20px;width:100%"></div>
+
+<div style="height:800px"></div>
+	<div data-role="footer">
+	<div align="center">
+       <a href="#page" data-role="button"> Home</a>&nbsp;&nbsp;
+                   <a href="#page2" data-role="button"> Library</a>&nbsp;&nbsp;
+        <a href="#page3" data-role="button"> Add</a>&nbsp;&nbsp;
+             <a href="#page6" data-role="button"> Check In</a>&nbsp;&nbsp;
+             <a href="#page5" data-role="button"> Check Out</a>&nbsp;&nbsp;
+             <a href="#page4" data-role="button"> Search</a>&nbsp;&nbsp;
+
+
+        </div>
+	</div>
+</div>
+
+<div data-role="page" id="page6">
+	<div data-role="header">
+		<h1>Check In a Book</h1>
+	</div>
+	<div data-role="content">	
+	</div>
+    <div id="checksuccess" style="padding-left:10px"></div>
+   <div style="padding-top:40px" id="loader1" align="center"><img src="ajax-loader.gif"></div>
+<div id="checkedOut" style="padding-left:10px"></div>
+
+
+<div style="height:800px"></div>
+	<div data-role="footer">
+		<div align="center">
+       <a href="#page" data-role="button"> Home</a>&nbsp;&nbsp;
+                   <a href="#page2" data-role="button"> Library</a>&nbsp;&nbsp;
+        <a href="#page3" data-role="button"> Add</a>&nbsp;&nbsp;
+             <a href="#page6" data-role="button"> Check In</a>&nbsp;&nbsp;
+             <a href="#page5" data-role="button"> Check Out</a>&nbsp;&nbsp;
+             <a href="#page4" data-role="button"> Search</a>&nbsp;&nbsp;
+
+
+        </div>
+	</div>
+</div>
+
+<div data-role="page" id="page7">
+	<div data-role="header">
+		<h1>Book Details</h1>
+	</div>
+	<div data-role="content">	
+    <div style="padding-top:40px" id="loader4" align="center"><img src="ajax-loader.gif"></div>
+    
+    <div id="comment_success"></div>
+<div style="padding:20px;" id="details">
+	</div>
+        
+</div>
+	<div data-role="footer">
+		<div align="center">
+       <a href="#page" data-role="button"> Home</a>&nbsp;&nbsp;
+                   <a href="#page2" data-role="button"> Library</a>&nbsp;&nbsp;
+        <a href="#page3" data-role="button"> Add</a>&nbsp;&nbsp;
+             <a href="#page6" data-role="button"> Check In</a>&nbsp;&nbsp;
+             <a href="#page5" data-role="button"> Check Out</a>&nbsp;&nbsp;
+             <a href="#page4" data-role="button"> Search</a>&nbsp;&nbsp;
+
+
+        </div>
+	</div>
+</div>
+
+</body>
+</html>
